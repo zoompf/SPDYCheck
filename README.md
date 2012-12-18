@@ -1,4 +1,4 @@
-== SPDYCheck ==
+## SPDYCheck ##
 
 SPDYCheck allows you to audit a web server for SPDY support, and help troubleshoot any problems that arise. It also tests for some best practices to best utilize SPDY, such as automatically redirecting from HTTP to SSL/SPDY.
 
