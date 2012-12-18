@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPDYCheck.org", "SPDYCheck.org.csproj", "{D652068C-7822-4498-B19A-4BF378BA23AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPDYAnalysis", "..\..\Libraries\SPDYAnalysis\SPDYAnalysis.csproj", "{1C7E8F96-23ED-4A52-B41A-E5A5D44D9787}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPDYAnalysis", "..\SPDYAnalysis\SPDYAnalysis.csproj", "{1C7E8F96-23ED-4A52-B41A-E5A5D44D9787}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

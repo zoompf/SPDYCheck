@@ -96,7 +96,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\SPDYAnalysis\SPDYAnalysis.csproj">
+    <ProjectReference Include="..\SPDYAnalysis\SPDYAnalysis.csproj">
       <Project>{1c7e8f96-23ed-4a52-b41a-e5a5d44d9787}</Project>
       <Name>SPDYAnalysis</Name>
     </ProjectReference>
