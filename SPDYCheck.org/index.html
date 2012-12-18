@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>SPDYCheck: Testing Websites for SPDY Support</title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-35451928-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+</script>
+    <style>
+        /*==== */
+.hidden 
+{
+	display: none;
+}
+
+h2 
+{
+	font-size: 26px;
+}
+
+input, textarea 
+{
+	width: inherit;
+}
+
+
+.media{overflow:hidden;*overflow:visible;zoom:1;}
+.media .img{float:left;margin-right: 10px;}
+.media .img img{display:block;}
+
+input 
+{
+	font-size: 13px;
+}
+
+/* basic body, control width, center it horizontally */
+body {
+	background: #FFF;
+	font: 14px normal Verdana, Arial, Helvetica, sans-serif;
+	work-break: normal;
+	width:720px;
+	margin:10px auto;
+}
+
+.c 
+{
+	text-align:center;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="media">
+  <a href="/" class="img">
+    <img width="181" height="124" src="images/flame.png" alt="SPDY Check logo" />
+  </a>
+
+  <div >
+    <h1><a href="/">SPDYCheck.org</a></h1>
+    <p>Check if a website properly supports the <a href="https://en.wikipedia.org/wiki/SPDY">SPDY protocol</a>, the super fast HTTP replacement, and troubleshoot any problems with the configuration.</p>
+    <p><a href="mailto:support@zoompf.com?subject=SPDY+Checker">Feedback & Support</a>
+  </div>
+</div>  
+  <p class="c">Powered by <a href="http://zoompf.com/"><img width="127" height="30" src="images/zoompf-small.png" alt="Zoompf"/></a></p>
+<hr />
+<div class="form-inline c">
+<p>Enter the hostname for the website you want to check.</p>
+          <p class="examples">Examples: <a href="#google.com">google.com</a> / <a href="#facebook.com">facebook.com</a> / <a href="#wordpress.com">wordpress.com</a> / <a href="#americanexpress.com">americanexpress.com</a> / <a href="#www.cloudflare.com">www.cloudflare.com</a></p>
+  <input type="text" name="host" id="host" size="35" autofocus placeholder="twitter.com">
+        <input type="submit" value="Check" id="btn" class="btn" />
+
+</div>
+
+<hr />
+<div id="banner"></div>
+<div id="results">
+
+</div>
+<p class="c">&copy; 2012. Build with <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> by <a href="http://zoompf.com">Zoompf</a></p>
+<script src="js/jquery-1.7.1.min.js"></script>
+<script>
+
+    var maxSPDYVer = 3;
+
+    function he(s) {
+        return s.replace(new RegExp('<','g'),'&lt;').replace(new RegExp('>','g'),'&gt;')
+    }
+
+    // Tiny templating :-)
+    function t(s,d){
+     for(var p in d)
+       s=s.replace(new RegExp('{'+p+'}','g'), d[p]);
+     return s;
+    }
+
+    function dispItem(title, content, type)
+    {
+       $('<div/>', {
+            'class': (type !=null) ? 'alert alert-' + type : 'alert',
+            html: t("<strong>{t}</strong><p>{c}</p>", { t: title, c: content })
+        }).appendTo('#results');
+    }
+
+    function success(data) {
+
+        if (data.bad) {
+            $("#banner").html('<div class="alert alert-error"><strong>Invalid Hostname</strong><p>Please enter just the hostname of the website you want to test. For example, try <code>google.com</code> or <code>www.paypal.com</code></p></div>');
+            return;
+        }
+
+        var host = data.Host;
+        
+        if (data.SupportsSPDY) {
+            $("#banner").html('<h2><img width="64" height="64" src="images/pass.gif"> ' + he(host) + ' Supports SPDY</h2>');
+        } else {
+            $("#banner").html('<h2><img width="64" height="64" src="images/fail.png"> ' + he(host) + ' Does Not Support SPDY</h2>');
+        }
+        $("#banner").append('<p><a href="#' + escape(host) + '">Link to this report</a>');
+        $('#results').html("<h2>Report Details</h2>");
+        
+        //SSL port connectivity status
+        if (data.ConnectivitySSL)
+        {
+            dispItem('Network Server on 443', 'Nice, this host has a network service listening on port 443. SPDY works over <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> which listens on port 443.', 'success');
+        } else {
+        dispItem('Nothing listening on 443!', 'Drat! This host is not listening for incoming requests on port 443. SPDY doesn\'t use port 80 like regular HTTP does. It uses a special service running on a different port, usually 443. To support SPDY, this host first needs to enabled <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> access for their website.', 'error');
+        }
+
+        //SSL protocol support status
+        if (data.SpeaksSSL) {
+            dispItem('SSL/TLS Detected', 'Good, this host is speaking <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a>. SPDY piggybacks on top of SSL/TLS, so a website needs SSL/TLS to use SPDY.', 'success');
+
+            //Certificate status
+            if (data.SSLCertificateValid) {
+                dispItem('Valid X.509 Certificate', 'This website is responding with a valid <a href="https://en.wikipedia.org/wiki/X.509#Certificates">X.509 certificate</a>. X.509 certificate errors can cause the browser to display warning messages and to stop speaking with the website, so using a valid certificate is an essential step to supporting SPDY.', 'success');
+            } else {
+                s = '';
+                $.each(data.CertErrors, function(index, value) {
+                    s += '<li>' + value + '</li>';
+                });
+
+                dispItem('Warning! Invalid X.509 Certificate', 'This website is responding with an invalid <a href="https://en.wikipedia.org/wiki/X.509#Certificates">X.509 certificate</a>. The specific problem(s) with the certificate are:<ul>' + s + '</ul>. By default, most web browsers will not display content from sites with invalid certificates. Users may have trouble accessing this website and using SPDY. Use the <a href="https://www.ssllabs.com/ssltest/index.html">Qualys SSL Labs SSL Server Test tool</a> to investigate the problems with the certificate.');                
+            }
+
+            //NPN status
+            if (data.HasNPNExtension) {
+                dispItem('ServerHello Contains NPN Extension', 'Nice, this server including the <a href="http://tools.ietf.org/html/draft-agl-tls-nextprotoneg">NPN Entension</a> during the SSL/TLS handshake. The NPN Extension is an additional part of the <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security#TLS_handshake_in_detail">SSL/TLS ServerHello message</a> which allows the web server to tell browser it supports additional protocols, like SPDY.', 'success');
+
+                //SPDY status
+                if (data.SupportsSPDY) {
+                    s = '';
+                    $.each(data.SPDYProtocols, function(index, value) {
+                        s += '<li>' + value + '</li>';
+                    });
+
+                    dispItem('Success! SPDY is Enabled!', 'Hurray, this website is using SPDY! The following protocols are supported:<ul>' + s + '</ul>', 'success');
+
+                    s = data.SPDYProtocols[0].match(/spdy\/(\d+)$/);
+                    s = (s == null) ? maxSPDYVer + 1 : s[1];
+
+                    //supporting latest version of SPDY?
+                    if (s == maxSPDYVer) {
+                        dispItem('SPDY Protocol Support Update-To-Date', 'This website supports the latest version of SPDY, which is <code>spdy/' + maxSPDYVer + '</code>.', 'info');
+                    } else if(s < maxSPDYVer) {
+                        dispItem('Out-of-Date SPDY Protocol Support', 'The most recent version of SPDY is <code>spdy/' + maxSPDYVer + '</code>. The highest version this website supports is <code>spdy/' + s + '</code>. There are ' + maxSPDYVer + ' major versions of SPDY. This website should consider updating its software if possible to support <code>spdy/' + maxSPDYVer + '</code>.', 'warn');
+                    }
+                    
+                    //HTTP over SSL status
+                    if (data.SupportSSLHTTPFallback) {
+                        dispItem('HTTP Fallback Detected', 'This website is using SPDY, but it also supports traditional HTTP over SSL. This ensures that older web browsers can still access this site using HTTP', 'success');
+                    } else {
+                        dispItem('HTTP Over SSL Not Supported!', 'This website only supports SPDY over SSL, and does not advertise HTTP in its NPN Extension. Web browsers without SPDY support may not be able to access this site', 'error');
+                    }
+
+                    
+                } else {
+                dispItem('SPDY Protocol Not Enabled!', 'Seriously? This SSL/TLS server is using the <a href="http://tools.ietf.org/html/draft-agl-tls-nextprotoneg">NPN Entension</a> to tell browsers it supports alternative protocols, but SPDY is not a protocol it supports. The server is not making SPDY an option. Since all the pieces are in place, hopefully it will be easy to enable SPDY support with this server.', 'error');
+                }
+            
+            } else {
+            dispItem('Missing NPN Extension in SSL/TLS Handshake', 'Sorry, but this server is not including an <a href="http://tools.ietf.org/html/draft-agl-tls-nextprotoneg">NPN Entension</a> during the SSL/TLS handshake. The NPN Extension is an additional part of the <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security#TLS_handshake_in_detail">SSL/TLS ServerHello message</a> which allows web servers to tell browsers they support additional protocols, like SPDY. SSL/TLS servers that don\'t use send the NPN Extension cannot use SPDY because they have no way to tell the browser to use SPDY instead of HTTP.', 'error');
+
+                //Server can support SPDY?
+                if (data.SSLServerHeader.length > 0) {
+
+                    //is it good?
+                    if(/ibm_http|apache|nginx/i.test(data.SSLServerHeader))
+                    {
+                        dispItem('SPDY Capable Server Detected!', 'Well awesome! This SSL/TLS web server is identifying itself as <code>' + he(data.SSLServerHeader) + '</code>. This is a SPDY capable web server! Go check your server for modules or newer versions which have SPDY support enabled.', 'info'); 
+                    } else if(/iis\//i.test(data.SSLServerHeader)) {
+                       dispItem('Incompatible Web Server.', 'Oh no! This web server is identifying itself as Microsoft IIS, specifically <code>' + he(data.SSLServerHeader) + '</code>.  Microsoft has not commited to the SPDY protocol and has proposed an alternative. It is unlikely this web server will ever support SPDY.', 'error'); 
+                    } else {
+                        dispItem('Web Server with Unknown SPDY Support Status', 'The SSL/TLS web server says it\'s a <code>' + data.SSLServerHeader + '</code> server. While this is not a web server known to support SPDY, perhaps it does or will do so soon. Consult the web server documentation and its vendor to learn more about SPDY support.', 'info'); 
+                    }
+                } else {
+                    dispItem('Unknown Web Server', 'This SSL/TLS web server did not identify itself via the <code>Server</code> response header. Currently, this website does not support SPDY and it is unclear whether the underlying web server could support SPDY, perhaps it does or will do so soon. Consult the web server documentation and its vendor to learn more about SPDY support.', 'info');                 
+                }
+
+            }
+
+            //HTTP redirect status
+            if(data.SupportsSPDY && data.RedirectsToSSL) {
+                dispItem('HTTP Redirects to SPDY', 'Pretty Sexy! Accessing this website via HTTP automatically redirects the user to access the website via SSL/TLS and SPDY. This means all of website visitors that can browser with SPDY, do browser using SPDY.', 'info');
+               
+            } else if(data.SupportsSPDY && !data.RedirectsToSSL) {
+            
+                dispItem('HTTP Traffic Allowed', 'This website can still be access via HTTP. HTTP does not provide any widely implemented mechanism for using other protocols like SPDY. Only traffic over SSL/TLS using the NPN Extension can be optimized with SPDY. By allowing HTTP traffic, this website is not even offering SPDY capable browsers the choice of using SPDY. If possible, this website should redirect all <code>http://</code> to <code>https://</code>, ideally with a cachable <code>HTTP 301</code> redirect. ', 'warn');
+            } else if(data.RedirectsToSSL) {
+                dispItem('HTTP Redirects to HTTPS', 'Nice job! Accessing this website via HTTP automatically redirects the user to access the website via SSL/TLS. Even though this website doesn\'t support SPDY yet, this is a good thing. It forces the website\'s visitors to use SSL/TLS, which makes it easier to offer SPDY support to all capable browsers at some point in the future.', 'info');
+            }
+        
+        } else {
+            dispItem('Host does not use SSL/TLS', 'Crap! This website cannot be accessed via <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a>. SPDY works by piggybacking on top of SSL/TLS. To use SPDY this website must first enable access via SSL/TLS.', 'error');
+        }
+
+    }
+
+
+    function userGo() {
+        var host = $("#host").attr("value");
+        host = (host.length == 0) ? $("#host").attr("placeholder") : host;
+        if ('#' + host == window.location.hash) { return; }
+        window.location.hash = '#' + host;
+        runTest(host);
+    }
+
+    $("#btn").click(function() {
+        userGo();
+        return false;
+    });
+
+    $("#host").keypress(function(event) {
+        if (event.which == 13) {
+            $(this).blur();
+            userGo();
+        }
+    });    
+
+    function runTest(host) {
+        $("#banner").html('<h2><img width="31" height="31" src="images/spinner.gif"> Checking ' + he(host) + '...</h2>');
+        $('#results').html("");
+        $.ajax({
+            url: 'Check.ashx?host=' + escape(host),
+            dataType: 'json',
+            success: success
+        });
+        return false;
+    }
+
+    function doHash() {
+        if (window.location.hash.length > 1) {
+            var host = window.location.hash.substr(1)
+            $("#host").attr("value", he(host));
+            $("#host").blur();
+            return runTest(host);
+        }
+    }
+
+    $(function() {
+        doHash();
+        $('.examples a').click(function() {
+            var host = $(this).attr("href");
+            if (host == window.location.hash) {
+                return;
+            }
+            window.location = host;
+            doHash();
+        });
+
+    });
+
+   
+</script>
+
+
+</body>
+</html>
