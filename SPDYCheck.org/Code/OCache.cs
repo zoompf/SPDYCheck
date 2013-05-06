@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.Text;
 
 
+
+
 namespace Zoompf.General.Collections
 {
     
@@ -38,7 +40,7 @@ namespace Zoompf.General.Collections
         //Objects will be cached for 5 minutes by default
         private const int DefaultObjectLifetime = 5 * 60;
 
-        private Dictionary<string, Tupal<K, DateTime>> objects;
+        private Dictionary<string, ZTupal<K, DateTime>> objects;
         private object locker;
         private int maxItems;
 
@@ -46,13 +48,13 @@ namespace Zoompf.General.Collections
 
         public OCache(int maxItems)
         {
-            this.objects = new Dictionary<string, Tupal<K, DateTime>>();
+            this.objects = new Dictionary<string, ZTupal<K, DateTime>>();
             this.maxItems = maxItems;
         }
 
         public K Get(String key)
         {
-            Tupal<K, DateTime> i;
+            ZTupal<K, DateTime> i;
             if(!this.objects.TryGetValue(key, out i))
             {
                 return default(K);
@@ -85,7 +87,7 @@ namespace Zoompf.General.Collections
                     this.objects.Clear();
                 }
             }
-            this.objects[key] = new Tupal<K, DateTime>(val, DateTime.Now.AddSeconds(secondsTilExpires));
+            this.objects[key] = new ZTupal<K, DateTime>(val, DateTime.Now.AddSeconds(secondsTilExpires));
 
         }
 

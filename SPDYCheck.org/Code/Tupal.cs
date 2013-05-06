@@ -27,18 +27,18 @@ using System.Text;
 namespace Zoompf.General
 {
     //Generic Tupal class;
-    public class Tupal<I, J>
+    public class ZTupal<I, J>
     {
         public I one;
         public J two;
 
-        public Tupal()
+        public ZTupal()
         {
             this.one = default(I);
             this.two = default(J);
         }
 
-        public Tupal(I i, J j)
+        public ZTupal(I i, J j)
         {
             this.one = i;
             this.two = j;

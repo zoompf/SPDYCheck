@@ -62,13 +62,13 @@ namespace SPDYCheck.org
             {
 
                 bool fromCache = true;
-                SPDYResult result = cache.Get(host);
-                if (result == null)
-                {
-                    fromCache = false;
-                    result = SPDYChecker.Test(host, 443, 8000);
-                    cache.Add(host, result);
-                }
+                //SPDYResult result = cache.Get(host);
+                //if (result == null)
+                //{
+                //    fromCache = false;
+                SPDYResult    result = SPDYChecker.Test(host, 443, 8000);
+                //    cache.Add(host, result);
+                //}
 
                 TestLog.Log(fromCache, result, context.Request.UserHostAddress);
 
