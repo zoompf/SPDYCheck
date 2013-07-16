@@ -202,7 +202,7 @@ body {
                     } else if(/iis\//i.test(data.SSLServerHeader)) {
                        dispItem('Incompatible Web Server.', 'Oh no! This web server is identifying itself as Microsoft IIS, specifically <code>' + he(data.SSLServerHeader) + '</code>.  Microsoft has not commited to the SPDY protocol and has proposed an alternative. It is unlikely this web server will ever support SPDY.', 'error'); 
                     } else {
-                        dispItem('Web Server with Unknown SPDY Support Status', 'The SSL/TLS web server says it\'s a <code>' + data.SSLServerHeader + '</code> server. While this is not a web server known to support SPDY, perhaps it does or will do so soon. Consult the web server documentation and its vendor to learn more about SPDY support.', 'info'); 
+                        dispItem('Web Server with Unknown SPDY Support Status', 'The SSL/TLS web server says it\'s a <code>' + he(data.SSLServerHeader) + '</code> server. While this is not a web server known to support SPDY, perhaps it does or will do so soon. Consult the web server documentation and its vendor to learn more about SPDY support.', 'info'); 
                     }
                 } else {
                     dispItem('Unknown Web Server', 'This SSL/TLS web server did not identify itself via the <code>Server</code> response header. Currently, this website does not support SPDY and it is unclear whether the underlying web server could support SPDY, perhaps it does or will do so soon. Consult the web server documentation and its vendor to learn more about SPDY support.', 'info');                 
