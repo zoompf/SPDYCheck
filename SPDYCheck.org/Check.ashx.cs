@@ -61,7 +61,7 @@ namespace SPDYCheck.org
             else
             {
 
-                bool fromCache = true;
+                bool fromCache = false;
                 //SPDYResult result = cache.Get(host);
                 //if (result == null)
                 //{
