@@ -54,7 +54,7 @@ namespace Zoompf.SPDYAnalysis
 
 
         public bool RedirectsToSSL = false;
-  
+        public String HstsHeader = String.Empty;
 
         public bool SSLCertificateValid
         {
@@ -92,7 +92,41 @@ namespace Zoompf.SPDYAnalysis
                 }
                 return false;
             }
-        } 
+        }
+
+        public bool UsesStrictTransportSecurity
+        {
+            get { return !String.IsNullOrEmpty(this.HstsHeader); }
+        }
+
+        /// <summary>
+        /// returns the max-age that the HSTS directive is cached for
+        /// </summary>
+        public int HstsMaxAge
+        {
+            get
+            {
+                
+                if (!this.UsesStrictTransportSecurity)
+                {
+                    return 0;
+                }
+                string[] parts = this.HstsHeader.Split('=');
+                if (parts.Length != 2)
+                {
+                    return 0;
+                }
+                try
+                {
+                    return Convert.ToInt32(parts[1]);
+                }
+                catch (Exception)
+                {
+
+                }
+                return 0;
+            }
+        }
 
 
         public SPDYResult(string hostname)
@@ -111,6 +145,7 @@ namespace Zoompf.SPDYAnalysis
             this.CertErrors = new List<SSLCertError>();
             this.SSLServerHeader = String.Empty;
 
+            this.HstsHeader = String.Empty;
 
             //SPDY Stuff
             this.SPDYProtocols = new List<string>();
