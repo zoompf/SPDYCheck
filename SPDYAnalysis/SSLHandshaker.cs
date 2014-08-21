@@ -145,6 +145,12 @@ namespace Zoompf.SPDYAnalysis
                 return;
             }
 
+            if (!tcp.Connected)
+            {
+                return;
+            }
+
+
             NetworkStream stream = tcp.GetStream();
 
             ByteBuffer buffer = new ByteBuffer();

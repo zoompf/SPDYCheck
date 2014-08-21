@@ -114,8 +114,13 @@ namespace Zoompf.SPDYAnalysis
                 
                 return;
             }
-            this.ConnectivityWorks = true;
-             
+            this.ConnectivityWorks = client.Connected ;
+
+            if (!this.ConnectivityWorks)
+            {
+                return;
+            }
+
             RemoteCertificateValidationCallback callback = new RemoteCertificateValidationCallback(OnCertificateValidation);
             SslStream stream = new SslStream(client.GetStream(), false, callback);
              
