@@ -102,11 +102,6 @@ namespace Zoompf.SPDYAnalysis
             }
         }
 
-        /// <summary>
-        /// returns the value of an HTTP Response header, if it exists in the response. Otherwise, return String.Empty
-        /// </summary>
-        /// <param name="header"></param>
-        /// <returns></returns>
         public String GetHeaderValue(String header)
         {
             foreach (String key in Headers.Keys)
