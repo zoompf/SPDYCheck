@@ -44,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\Libraries\External Libraries\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -89,12 +89,6 @@
   <ItemGroup>
     <Content Include="Check.ashx" />
     <None Include="Properties\PublishProfiles\LocalSPDY.pubxml" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPDYAnalysis\SPDYAnalysis.csproj">
