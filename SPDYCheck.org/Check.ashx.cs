@@ -40,8 +40,6 @@ namespace SPDYCheck.org
     /// </summary>
     public class Check : IHttpHandler
     {
-        
-        public static OCache<SPDYResult> cache = new OCache<SPDYResult>();
 
         public void ProcessRequest(HttpContext context)
         {
@@ -62,13 +60,9 @@ namespace SPDYCheck.org
             {
 
                 bool fromCache = false;
-                //SPDYResult result = cache.Get(host);
-                //if (result == null)
-                //{
-                //    fromCache = false;
+
                 SPDYResult    result = SPDYChecker.Test(host, 443, 8000);
-                //    cache.Add(host, result);
-                //}
+
 
                 TestLog.Log(fromCache, result, context.Request.UserHostAddress);
 
