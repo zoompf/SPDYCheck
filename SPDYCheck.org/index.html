@@ -88,7 +88,7 @@ body {
 <div id="results">
 
 </div>
-<p class="c">&copy; 2012. Build with <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> by <a href="http://zoompf.com">Zoompf</a></p>
+<p class="c">&copy; <script>document.write((new Date()).getFullYear());</script>. Build with <a href="http://twitter.github.com/bootstrap/">Bootstrap</a> by <a href="http://zoompf.com">Zoompf</a></p>
 <script src="js/jquery-1.7.1.min.js"></script>
 <script>
 
@@ -231,8 +231,10 @@ body {
     function userGo() {
         var host = $("#host").attr("value");
         host = (host.length == 0) ? $("#host").attr("placeholder") : host;
-        if ('#' + host == window.location.hash) { return; }
-        window.location.hash = '#' + host;
+        if ('#' + host != window.location.hash)
+        {
+            window.location.hash = '#' + host;
+        }
         runTest(host);
     }
 
