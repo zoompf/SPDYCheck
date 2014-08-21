@@ -106,6 +106,14 @@ namespace SPDYCheck.org
                     }
                     resp["SPDYProtocols"] = a;
                 }
+
+                resp["SupportsHSTS"] = result.UsesStrictTransportSecurity;
+                if (result.UsesStrictTransportSecurity)
+                {
+                    resp["HSTSHeader"] = result.HstsHeader;
+                    resp["HSTSMaxAge"] = result.HstsMaxAge;
+                }
+
             }
 
             context.Response.Write(resp.ToString());
