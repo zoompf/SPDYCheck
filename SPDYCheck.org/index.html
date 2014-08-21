@@ -80,7 +80,11 @@ body {
           <p class="examples">Examples: <a href="#google.com">google.com</a> / <a href="#facebook.com">facebook.com</a> / <a href="#wordpress.com">wordpress.com</a> / <a href="#americanexpress.com">americanexpress.com</a> / <a href="#www.cloudflare.com">www.cloudflare.com</a></p>
   <input type="text" name="host" id="host" size="35" autofocus placeholder="twitter.com">
         <input type="submit" value="Check" id="btn" class="btn" />
-
+</div>
+<br />
+<div class="alert alert-warn">
+    <strong>Notice:</strong>
+    <p>Many of the SPDY implementations out there are starting to switch from <a href="https://www.imperialviolet.org/2013/03/20/alpn.html">NPN to APLN negotiation</a>. SPDYCheck does not yet support APLN negotiation.  Sites like Facebook and Twitter have different SPDY implementations deployed behind load balancers, which can lead to some results saying SPDY is supported while others saying it is not. If you receive a results that you know is incorrect. Try running the check again. </p>
 </div>
 
 <hr />
