@@ -61,17 +61,15 @@ namespace Zoompf.SPDYAnalysis
                 result.HasNPNExtension = handshaker.HasNPNExtension;
                 result.SPDYProtocols.AddRange(handshaker.SPDYProtocols);
 
-                //if we don't support SPDY, grab the Server header for additional analysis
-                if (!result.SupportsSPDY)
+                //lets check the HTTP headers of the SSL website, to get the server header and test for HSTS support.
+                requestor.Timeout = 9000;
+                resp = requestor.Head("https://" + host + ":" + port + "/");
+                if (resp != null)
                 {
-                    //check port 80...
-                    requestor.Timeout = 9000;
-                    resp = requestor.Head("https://" + host + ":" + port + "/");
-                    if (resp != null)
-                    {
-                        result.SSLServerHeader = resp.GetHeaderValue("Server");
-                    }
+                    result.SSLServerHeader = resp.GetHeaderValue("Server");
+                    result.HstsHeader = resp.GetHeaderValue("Strict-Transport-Security");
                 }
+                
                
             }
 
