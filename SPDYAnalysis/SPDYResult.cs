@@ -24,12 +24,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Zoompf.SPDYAnalysis
 {
 
     public class SPDYResult
     {
+
+        private static Regex hstsMaxAge = new Regex(@"max-age=(\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
 
         public string Hostname = String.Empty;
         
@@ -111,20 +115,14 @@ namespace Zoompf.SPDYAnalysis
                 {
                     return 0;
                 }
-                string[] parts = this.HstsHeader.Split('=');
-                if (parts.Length != 2)
-                {
-                    return 0;
-                }
-                try
-                {
-                    return Convert.ToInt32(parts[1]);
-                }
-                catch (Exception)
-                {
 
+                Match match = hstsMaxAge.Match(this.HstsHeader);
+                if (match.Success)
+                {
+                    return Convert.ToInt32(match.Groups[1].Value);
                 }
                 return 0;
+                
             }
         }
 

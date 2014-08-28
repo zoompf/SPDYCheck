@@ -13,7 +13,7 @@ namespace Zoompf.SPDYCheckConsole
         static void Main(string[] args)
         {
 
-            SPDYResult result = SPDYChecker.Test("twitter.com", 443, 8000);
+            SPDYResult result = SPDYChecker.Test("scotthelme.co.uk", 443, 8000);
 
             int x = 45;
 
