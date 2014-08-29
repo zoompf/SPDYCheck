@@ -62,7 +62,7 @@ namespace SPDYCheck.org
             {
                 host = match.Groups[1].Value;
 
-                if (match.Groups.Count > 2)
+                if (match.Groups[2].Value.Length > 1)
                 {
                     //got a port, skip the ":" at the start
                     port = Convert.ToInt32(match.Groups[2].Value.Substring(1));
@@ -101,8 +101,9 @@ namespace SPDYCheck.org
                 ////Hurray! Everything worked!
 
                 JArray a;
-                resp["Host"] = result.Hostname;
                 resp["bad"] = false;
+                resp["Host"] = result.Hostname;
+                resp["Port"] = result.Port;
                 resp["ConnectivityHTTP"] = result.ConnectivityHTTP;
                 resp["HTTPServerHeader"] = result.HTTPServerHeader;
 
