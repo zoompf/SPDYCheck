@@ -41,13 +41,45 @@ namespace SPDYCheck.org
     public class Check : IHttpHandler
     {
 
+        //require a . in the hostname, and an optional :port
+        //capture group 1: the host name
+        //capture group 2: optional port
+        private static Regex hostRegex = new Regex(@"^([a-zA-Z0-9\-\.]+\.[a-zA-Z0-9]+)(:\d{3,5})?$", RegexOptions.Compiled);
+
+
         public void ProcessRequest(HttpContext context)
         {
             
             context.Response.ContentType = "text/plain";
 
-            string host = Normalize(context.Request.QueryString["host"]);
-            host = ValidateRegex(host.ToLower(), new Regex(@"^[a-zA-Z0-9\-\.]+$"));
+            string host = String.Empty;
+            int port = 443;
+
+            string tmp = Normalize(context.Request.QueryString["host"]).ToLower();
+
+            Match match = hostRegex.Match(tmp);
+            if (match.Success)
+            {
+                host = match.Groups[1].Value;
+
+                if (match.Groups.Count > 2)
+                {
+                    //got a port, skip the ":" at the start
+                    port = Convert.ToInt32(match.Groups[2].Value.Substring(1));
+                }
+
+                //disallow localhost and private ips
+                if (
+                    host == "localhost" ||
+                    host == "127.0.0.1" ||
+                    host.StartsWith("192.") ||
+                    host.StartsWith("172.") ||
+                    host.StartsWith("10."))
+                {
+                    host = String.Empty;
+                }
+            }
+
 
             JObject resp = new JObject();
 
@@ -61,7 +93,7 @@ namespace SPDYCheck.org
 
                 bool fromCache = false;
 
-                SPDYResult    result = SPDYChecker.Test(host, 443, 8000);
+                SPDYResult result = SPDYChecker.Test(host, port, 8000);
 
 
                 TestLog.Log(fromCache, result, context.Request.UserHostAddress);
@@ -133,17 +165,6 @@ namespace SPDYCheck.org
         {
             return (o != null) ? o.ToString().Trim() : String.Empty;
         }
-
-        public static String ValidateRegex(String s, Regex regex)
-        {
-            s = Normalize(s);
-            if (!regex.IsMatch(s))
-            {
-                return String.Empty;
-            }
-            return s;
-        }
-
 
     }
 }

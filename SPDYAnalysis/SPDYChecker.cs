@@ -33,7 +33,7 @@ namespace Zoompf.SPDYAnalysis
         public static SPDYResult Test(string host, int port, int mSecTimeout)
         {
 
-            SPDYResult result = new SPDYResult(host);
+            SPDYResult result = new SPDYResult(host, port);
 
             SimpleRequestor requestor = new SimpleRequestor();
 

@@ -36,6 +36,7 @@ namespace Zoompf.SPDYAnalysis
 
 
         public string Hostname = String.Empty;
+        public int Port = 0;
         
         
         
@@ -127,9 +128,10 @@ namespace Zoompf.SPDYAnalysis
         }
 
 
-        public SPDYResult(string hostname)
+        public SPDYResult(string hostname, int port)
         {
             this.Hostname = hostname;
+            this.Port = port;
 
             //HTTP Stuff
             this.ConnectivityHTTP = false;
