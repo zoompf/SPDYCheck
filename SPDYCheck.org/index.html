@@ -108,24 +108,14 @@ body {
        s=s.replace(new RegExp('{'+p+'}','g'), d[p]);
      return s;
     }
-
-    function iconForType(type) {
-        if (type == "success") {
-            return bootstrapIcon('icon-ok');
-        }
-        return "";
-    }
-
-    function bootstrapIcon(name) {
-        return '<i class="name"></i>';
-    }
-    
-
+  
     function dispItem(title, content, type)
     {
+        type = type || '';
+
        $('<div/>', {
-            'class': (type !=null) ? 'alert alert-' + type : 'alert',
-            html: t("<strong>{i}{t}</strong><p>{c}</p>", { t: title, c: content, i: iconForType(type) })
+            'class': (type.length > 0) ? 'alert alert-' + type : 'alert',
+            html: t("<strong>{t}</strong><p>{c}</p>", { t: title, c: content })
         }).appendTo('#results');
     }
 
@@ -144,7 +134,7 @@ body {
         } else {
             $("#banner").html('<h2><img width="64" height="64" src="images/fail.png"> ' + he(host) + ' Does Not Support SPDY</h2>');
         }
-        $("#banner").append('<p><a href="#' + escape(host) + '">Link to this report</a>');
+        $("#banner").append('<p><ul class="inline"><li><a href="#' + escape(host) + '">Link to this report</a></li><li><span class="label label-info">New!</span> <a href="http://zoompf.com/free">Test for performance issues</a></li><li><a href="http://zoompf.com/alerts">It\'s a secret to everybody...</a></li></ul></div>');
         $('#results').html("<h2>Report Details</h2>");
         
         //SSL port connectivity status
