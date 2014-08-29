@@ -132,6 +132,10 @@ namespace Zoompf.SPDYAnalysis
         {
             this.Hostname = hostname;
             this.Port = port;
+            if(this.Port != 443)
+            {
+                this.Hostname += ":" + this.Port;
+            }
 
             //HTTP Stuff
             this.ConnectivityHTTP = false;

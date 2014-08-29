@@ -109,11 +109,23 @@ body {
      return s;
     }
 
+    function iconForType(type) {
+        if (type == "success") {
+            return bootstrapIcon('icon-ok');
+        }
+        return "";
+    }
+
+    function bootstrapIcon(name) {
+        return '<i class="name"></i>';
+    }
+    
+
     function dispItem(title, content, type)
     {
        $('<div/>', {
             'class': (type !=null) ? 'alert alert-' + type : 'alert',
-            html: t("<strong>{t}</strong><p>{c}</p>", { t: title, c: content })
+            html: t("<strong>{i}{t}</strong><p>{c}</p>", { t: title, c: content, i: iconForType(type) })
         }).appendTo('#results');
     }
 
@@ -125,6 +137,7 @@ body {
         }
 
         var host = data.Host;
+        var port = data.Port;
         
         if (data.SupportsSPDY) {
             $("#banner").html('<h2><img width="64" height="64" src="images/pass.gif"> ' + he(host) + ' Supports SPDY</h2>');
@@ -137,9 +150,9 @@ body {
         //SSL port connectivity status
         if (data.ConnectivitySSL)
         {
-            dispItem('Network Server on 443', 'Nice, this host has a network service listening on port 443. SPDY works over <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> which listens on port 443.', 'success');
+            dispItem('Network Server on ' + port, 'Nice, this host has a network service listening on port ' + port +'. SPDY works over <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> which usually listens on port 443.', 'success');
         } else {
-        dispItem('Nothing listening on 443!', 'Drat! This host is not listening for incoming requests on port 443. SPDY doesn\'t use port 80 like regular HTTP does. It uses a special service running on a different port, usually 443. To support SPDY, this host first needs to enabled <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> access for their website.', 'error');
+        dispItem('Nothing listening on ' + port + '!', 'Drat! This host is not listening for incoming requests on port ' + port + '. SPDY doesn\'t use port 80 like regular HTTP does. It uses a special service running on a different port, usually 443. To support SPDY, this host first needs to enabled <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> access for their website.', 'error');
         }
 
         //SSL protocol support status
