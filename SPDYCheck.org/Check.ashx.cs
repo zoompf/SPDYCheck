@@ -46,14 +46,33 @@ namespace SPDYCheck.org
         //capture group 2: optional port
         private static Regex hostRegex = new Regex(@"^([a-zA-Z0-9\-\.]+\.[a-zA-Z0-9]+)(:\d{3,5})?$", RegexOptions.Compiled);
 
+        // Cache results of common entries
+        private static OCache<String> cachedResults = new OCache<string>();
+        protected const int cacheResultsExpiration = 600;  // 10 minutes
+
+        // Prevent hacking/abuse
+        private static OCache<int> userTracker = new OCache<int>();
+        protected const int userTrackerExpiration = 3600;    // 1 hour
+        protected const int maxAttempts = 15;                // max # attempts allowed in that time
 
         public void ProcessRequest(HttpContext context)
         {
+            JObject resp = new JObject();
             
             context.Response.ContentType = "text/plain";
 
             string host = String.Empty;
             int port = 443;
+
+            String clientIPAddress = getClientIP(context);
+
+            // If excessive attempts from this IP, return now
+            if (clientHitMaxAttempts(clientIPAddress))
+            {
+                resp["excessive"] = true;
+                context.Response.Write(resp.ToString());
+                return;
+            }
 
             string tmp = Normalize(context.Request.QueryString["host"]).ToLower();
 
@@ -80,82 +99,151 @@ namespace SPDYCheck.org
                 }
             }
 
-
-            JObject resp = new JObject();
-
+            // If bad host, return now
             if (String.IsNullOrEmpty(host))
             {
                 resp["bad"] = true;
-
+                context.Response.Write(resp.ToString());
+                return;
             }
-            else
+
+            // If this host is in our cache, just return that.
+            if (cachedResults.ContainsKey(host))
+            {
+                String log = String.Format("{0}\tReturning cached result of {1} for {2}", DateTime.Now, host, clientIPAddress);
+                TestLog.Log(log);
+                context.Response.Write(cachedResults.Get(host));
+                return;
+            }
+
+            SPDYResult result = SPDYChecker.Test(host, port, 8000);
+
+            TestLog.Log(false, result, clientIPAddress);
+
+            ////Hurray! Everything worked!
+
+            JArray a;
+            resp["bad"] = false;
+            resp["Host"] = result.Hostname;
+            resp["Port"] = result.Port;
+            resp["ConnectivityHTTP"] = result.ConnectivityHTTP;
+            resp["HTTPServerHeader"] = result.HTTPServerHeader;
+
+            resp["ConnectivitySSL"] = result.ConnectivitySSL;
+            resp["SpeaksSSL"] = result.SpeaksSSL;
+            resp["SupportSSLHTTPFallback"] = result.SupportSSLHTTPFallback;
+
+            resp["RedirectsToSSL"] = result.RedirectsToSSL;
+
+            resp["SSLCertificateValid"] = result.SSLCertificateValid;
+
+            if (!result.SSLCertificateValid)
+            {
+                a = new JArray();
+                foreach (SSLCertError s in result.CertErrors)
+                {
+                    a.Add(s.ToString());
+                }
+                resp["CertErrors"] = a;
+            }
+
+            resp["SSLServerHeader"] = result.SSLServerHeader;
+            resp["HasNPNExtension"] = result.HasNPNExtension;
+            resp["SupportsSPDY"] = result.SupportsSPDY;
+            if (result.SupportsSPDY)
             {
 
-                bool fromCache = false;
 
-                SPDYResult result = SPDYChecker.Test(host, port, 8000);
-
-
-                TestLog.Log(fromCache, result, context.Request.UserHostAddress);
-
-                ////Hurray! Everything worked!
-
-                JArray a;
-                resp["bad"] = false;
-                resp["Host"] = result.Hostname;
-                resp["Port"] = result.Port;
-                resp["ConnectivityHTTP"] = result.ConnectivityHTTP;
-                resp["HTTPServerHeader"] = result.HTTPServerHeader;
-
-                resp["ConnectivitySSL"] = result.ConnectivitySSL;
-                resp["SpeaksSSL"] = result.SpeaksSSL;
-                resp["SupportSSLHTTPFallback"] = result.SupportSSLHTTPFallback;
-
-                resp["RedirectsToSSL"] = result.RedirectsToSSL;
-
-                resp["SSLCertificateValid"] = result.SSLCertificateValid;
-
-                if (!result.SSLCertificateValid)
+                a = new JArray();
+                foreach (string s in result.SPDYProtocols)
                 {
-                    a = new JArray();
-                    foreach (SSLCertError s in result.CertErrors)
-                    {
-                        a.Add(s.ToString());
-                    }
-                    resp["CertErrors"] = a;
+                    a.Add(s);
                 }
-
-                resp["SSLServerHeader"] = result.SSLServerHeader;
-                resp["HasNPNExtension"] = result.HasNPNExtension;
-                resp["SupportsSPDY"] = result.SupportsSPDY;
-                if (result.SupportsSPDY)
-                {
-
-
-                    a = new JArray();
-                    foreach (string s in result.SPDYProtocols)
-                    {
-                        a.Add(s);
-                    }
-                    resp["SPDYProtocols"] = a;
-                }
-
-                resp["SupportsHSTS"] = result.UsesStrictTransportSecurity;
-                if (result.UsesStrictTransportSecurity)
-                {
-                    resp["HSTSHeader"] = result.HstsHeader;
-                    resp["HSTSMaxAge"] = result.HstsMaxAge;
-                }
-
+                resp["SPDYProtocols"] = a;
             }
 
-            context.Response.Write(resp.ToString());
+            resp["SupportsHSTS"] = result.UsesStrictTransportSecurity;
+            if (result.UsesStrictTransportSecurity)
+            {
+                resp["HSTSHeader"] = result.HstsHeader;
+                resp["HSTSMaxAge"] = result.HstsMaxAge;
+            }
+
+
+            String response = resp.ToString();
+            context.Response.Write(response);
+
+            // Cache for future use (perform secondary lookup in case another thread added this during execution)
+            if (!cachedResults.ContainsKey(host))
+            {
+                cachedResults.Add(host, response, cacheResultsExpiration);
+            }
         }
 
         public bool IsReusable
         {
             get
             {
+                return false;
+            }
+        }
+
+        // Find the client's IP address from CloudFlare, look for CF-Connecting-IP header.
+        // See https://support.cloudflare.com/hc/en-us/articles/200170986-How-does-CloudFlare-handle-HTTP-Request-headers-
+        protected String getClientIP(HttpContext context)
+        {
+            System.Collections.Specialized.NameValueCollection headers = context.Request.Headers;
+            for (int index = 0; index < headers.Count; ++index)
+            {
+                String key = headers.GetKey(index);
+                if (key == "CF-Connecting-IP")
+                {
+                    String[] vals = headers.GetValues(index);
+                    if (vals.Length > 0)
+                    {
+                        // Should always be first entry
+                        return vals[0];
+                    }
+                }
+            }
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Has this client IP address hit us too many times? Returns true if they have.
+        /// </summary>
+        /// <param name="clientIPAddress"></param>
+        /// <returns></returns>
+        protected bool clientHitMaxAttempts(String clientIPAddress) 
+        {
+            // Need an IP address
+            if (String.IsNullOrWhiteSpace(clientIPAddress))
+            {
+                return false;
+            }
+
+            // First visit in awhile
+            if (!userTracker.ContainsKey(clientIPAddress))
+            {
+                userTracker.Add(clientIPAddress, 1, userTrackerExpiration);
+                return false;
+            }
+
+            // We've seen this person before. Update their count
+            int currentAttempts = userTracker.Get(clientIPAddress);
+            ++currentAttempts;
+            userTracker.SafeUpdate(clientIPAddress,currentAttempts,userTrackerExpiration);
+
+            if(currentAttempts>maxAttempts) 
+            {
+                // Exceeded count
+                String log = String.Format("{0}\tBlocking excessive request {1} from {2}", DateTime.Now, clientIPAddress, currentAttempts);
+                TestLog.Log(log);
+                return true;
+            }
+            else 
+            {
+                // Still okay
                 return false;
             }
         }

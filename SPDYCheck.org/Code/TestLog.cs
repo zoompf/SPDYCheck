@@ -57,6 +57,19 @@ namespace SPDYCheck.org
             }
         }
 
+        public static void Log(String msg)
+        {
+
+            try
+            {
+                System.IO.File.AppendAllText(logfile, msg + Environment.NewLine);
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
         private static String MakeCSV(params object[] args)
         {
             StringBuilder sb = new StringBuilder();

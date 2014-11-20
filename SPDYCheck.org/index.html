@@ -125,6 +125,10 @@ body {
             $("#banner").html('<div class="alert alert-error"><strong>Invalid Hostname</strong><p>Please enter just the hostname of the website you want to test. For example, try <code>google.com</code> or <code>www.paypal.com</code></p></div>');
             return;
         }
+        else if (data.excessive) {
+            $("#banner").html('<div class="alert alert-error"><strong>Excessive Attempts</strong><p>We are happy you like SpdyCheck, but you are hurting our servers. Please come back later and try again.</p></div>');
+            return;
+        }
 
         var host = data.Host;
         var port = data.Port;
