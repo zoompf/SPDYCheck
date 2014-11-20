@@ -116,7 +116,19 @@ namespace SPDYCheck.org
                 return;
             }
 
-            SPDYResult result = SPDYChecker.Test(host, port, 8000, clientIPAddress);
+            SPDYResult result;
+            try 
+            {
+                result=SPDYChecker.Test(host, port, 8000, clientIPAddress);
+            }
+            catch(Exception e) 
+            {
+                resp["error"] = true;
+                context.Response.Write(resp.ToString());
+                String log = String.Format("Error encountered for {0}: {1}", host, e.Message);
+                TestLog.Log(log);
+                return;
+            }
 
             TestLog.Log(false, result, clientIPAddress);
 

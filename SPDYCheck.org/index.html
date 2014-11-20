@@ -133,6 +133,10 @@ body {
             $("#banner").html('<div class="alert alert-error"><strong>Excessive Attempts</strong><p>We are happy you like SpdyCheck, but you are hurting our servers. Please come back later and try again.</p></div>');
             return;
         }
+        else if (data.error) {
+            $("#banner").html('<div class="alert alert-error">SPDYCheck encountered an error scanning this host name.</div>');
+            return;
+        }
 
         var host = data.Host;
         var port = data.Port;
