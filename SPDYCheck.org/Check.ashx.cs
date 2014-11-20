@@ -58,6 +58,9 @@ namespace SPDYCheck.org
         public void ProcessRequest(HttpContext context)
         {
             JObject resp = new JObject();
+            resp["bad"] = false;
+            resp["hiterror"] = false;
+            resp["excessive"] = false;
             
             context.Response.ContentType = "text/plain";
 
@@ -123,9 +126,9 @@ namespace SPDYCheck.org
             }
             catch(Exception e) 
             {
-                resp["error"] = true;
+                resp["hiterror"] = true;
                 context.Response.Write(resp.ToString());
-                String log = String.Format("Error encountered for {0}: {1}", host, e.Message);
+                String log = String.Format("{0}Error encountered for {1}: {2}", DateTime.Now, host, e.Message);
                 TestLog.Log(log);
                 return;
             }
@@ -135,7 +138,6 @@ namespace SPDYCheck.org
             ////Hurray! Everything worked!
 
             JArray a;
-            resp["bad"] = false;
             resp["Host"] = result.Hostname;
             resp["Port"] = result.Port;
             resp["ConnectivityHTTP"] = result.ConnectivityHTTP;
