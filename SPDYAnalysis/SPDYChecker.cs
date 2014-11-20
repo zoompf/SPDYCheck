@@ -30,12 +30,12 @@ namespace Zoompf.SPDYAnalysis
     public static class SPDYChecker
     {
 
-        public static SPDYResult Test(string host, int port, int mSecTimeout)
+        public static SPDYResult Test(string host, int port, int mSecTimeout, String clientIP)
         {
 
             SPDYResult result = new SPDYResult(host, port);
 
-            SimpleRequestor requestor = new SimpleRequestor();
+            SimpleRequestor requestor = new SimpleRequestor(clientIP);
 
             SimpleResponse resp = null;
 

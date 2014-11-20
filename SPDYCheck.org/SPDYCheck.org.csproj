@@ -63,6 +63,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="about.html" />
     <Content Include="css\bootstrap.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="images\fail.png" />

@@ -39,10 +39,15 @@ namespace Zoompf.SPDYAnalysis
 
         public int Timeout;
 
-        public SimpleRequestor()
+        protected String clientIP;
+
+        public SimpleRequestor(String clientIP)
         {
-            this.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11";
+            // this.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11";
+            // So server admins can contact us
+            this.UserAgent = "SPDYCheck SPDY Protocol Tester, see http://spdycheck.org/about.html";
             this.Timeout = 60000;
+            this.clientIP = clientIP;
         }
 
         //============
@@ -60,6 +65,8 @@ namespace Zoompf.SPDYAnalysis
             request.UserAgent = this.UserAgent;
             request.Timeout = this.Timeout;
             request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+            request.Headers.Add("X-SPDYCHECK-ABOUT", "http://spdycheck.org/about.html");
+            request.Headers.Add("X-SPDYCHECK-CLIENTIP", this.clientIP);
             request.Accept = "*/*";
             return request;
         }

@@ -116,7 +116,7 @@ namespace SPDYCheck.org
                 return;
             }
 
-            SPDYResult result = SPDYChecker.Test(host, port, 8000);
+            SPDYResult result = SPDYChecker.Test(host, port, 8000, clientIPAddress);
 
             TestLog.Log(false, result, clientIPAddress);
 
