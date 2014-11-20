@@ -86,6 +86,10 @@ body {
     <strong>Notice:</strong>
     <p>Many of the SPDY implementations out there are starting to switch from <a href="https://www.imperialviolet.org/2013/03/20/alpn.html">NPN to APLN negotiation</a>. SPDYCheck does not yet support APLN negotiation.  Sites like Facebook and Twitter have different SPDY implementations deployed behind load balancers, which can lead to some results saying SPDY is supported while others saying it is not. If you receive a results that you know is incorrect. Try running the check again. </p>
 </div>
+<p>
+    <span class="label label-info">New!</span> Tired of site performance bugs? Get alerted automatically when new defects get introduced. <a href="http://zoompf.com/alerts#spdycheck">Free sign up.</a>
+</p>
+
 
 <hr />
 <div id="banner"></div>
@@ -138,7 +142,6 @@ body {
         } else {
             $("#banner").html('<h2><img width="64" height="64" src="images/fail.png"> ' + he(host) + ' Does Not Support SPDY</h2>');
         }
-        $("#banner").append('<p><ul class="inline"><li><a href="#' + escape(host) + '">Link to this report</a></li><li><span class="label label-info">New!</span> <a href="http://zoompf.com/free">Test for performance issues</a></li><li><a href="http://zoompf.com/alerts">It\'s a secret to everybody...</a></li></ul></div>');
         $('#results').html("<h2>Report Details</h2>");
         
         //SSL port connectivity status
