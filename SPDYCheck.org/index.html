@@ -234,7 +234,7 @@ body {
                
             } else if(data.SupportsSPDY && !data.RedirectsToSSL) {
             
-                dispItem('HTTP Traffic Allowed', 'This website can still be access via HTTP. HTTP does not provide any widely implemented mechanism for using other protocols like SPDY. Only traffic over SSL/TLS using the NPN Extension can be optimized with SPDY. By allowing HTTP traffic, this website is not even offering SPDY capable browsers the choice of using SPDY. If possible, this website should redirect all <code>http://</code> to <code>https://</code>, ideally with a cachable <code>HTTP 301</code> redirect. ', 'warn');
+                dispItem('HTTP Traffic Allowed', 'This website can still be accessed via HTTP. HTTP does not provide any widely implemented mechanism for using other protocols like SPDY. Only traffic over SSL/TLS using the NPN Extension can be optimized with SPDY. By allowing HTTP traffic, this website is not even offering SPDY capable browsers the choice of using SPDY. If possible, this website should redirect all <code>http://</code> to <code>https://</code>, ideally with a cachable <code>HTTP 301</code> redirect. ', 'warn');
             } else if(data.RedirectsToSSL) {
                 dispItem('HTTP Redirects to HTTPS', 'Nice job! Accessing this website via HTTP automatically redirects the user to access the website via SSL/TLS. Even though this website doesn\'t support SPDY yet, this is a good thing. It forces the website\'s visitors to use SSL/TLS, which makes it easier to offer SPDY support to all capable browsers at some point in the future.', 'info');
             }
