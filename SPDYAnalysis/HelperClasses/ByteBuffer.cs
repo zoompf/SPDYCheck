@@ -30,14 +30,14 @@ namespace Zoompf.SPDYAnalysis
     /// <summary>
     /// Byte Buffer. Handy class that auto resizes as you add bytes and lets you get a byte array out of it
     /// </summary>
-    internal class ByteBuffer
+    public class ByteBuffer
     {
         private byte[] buffer;
         private int offset;
         private int initialCap;
 
         //current number of the bytes stored in the buffer
-        public long Size
+        public int Size
         {
             get
             {
@@ -72,7 +72,7 @@ namespace Zoompf.SPDYAnalysis
         {
             byte [] tmp = new byte[size];
             ms.Read(tmp, 0, size);
-            Append(tmp, size);
+            Append(tmp);
         }
 
         /// <summary>
@@ -89,27 +89,54 @@ namespace Zoompf.SPDYAnalysis
         {
             byte[] array = new byte[1];
             array[0] = b;
-            Append(array,1);
+            Append(array);
         }
+
         public void Append(byte[] array)
         {
             Append(array, array.Length);
+
         }
 
         //for when the array is not completely full of data
-        public void Append(byte[] array, int size)
+        public void Append(byte[] array, int length)
         {
             int existingCap = this.buffer.Length - offset;
 
-            if (existingCap < size)
+            if (existingCap < length)
             {
-                resizeByAtLeast(size);
+                resizeByAtLeast(length);
             }
-           
-            Array.Copy(array, 0, this.buffer, this.offset, size);
 
-            this.offset += size;
+            Array.Copy(array, 0, this.buffer, this.offset, length);
+
+            this.offset += length;
         }
+
+        public void PrependHex(String hexString)
+        {
+            Prepend(HexStringToBytes(hexString));
+        }
+
+        public void Prepend(byte b)
+        {
+            byte[] array = new byte[1];
+            array[0] = b;
+            Prepend(array);
+        }
+
+        public void Prepend(byte[] array)
+        {
+
+            byte[] newBuffer = new byte[this.buffer.Length + array.Length];
+            
+            Array.Copy(array, 0, newBuffer, 0, array.Length);
+            Array.Copy(this.buffer, 0, newBuffer, array.Length, this.buffer.Length);
+            this.offset += array.Length;
+            this.buffer = newBuffer;
+
+        }
+
 
         public byte[] ToByteArray()
         {
@@ -145,7 +172,7 @@ namespace Zoompf.SPDYAnalysis
         /// </summary>
         /// <param name="hex"></param>
         /// <returns></returns>
-        private static byte[] HexStringToBytes(string hex)
+        public static byte[] HexStringToBytes(string hex)
         {
             //strips the leading 0x off a hex literal
             if (hex.StartsWith("0x") && hex.Length > 2)

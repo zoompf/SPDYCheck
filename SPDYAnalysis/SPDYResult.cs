@@ -1,7 +1,7 @@
 ﻿/*
 
  * SPDYChecker - Audits websites for SPDY support and troubleshooting problems
-    Copyright (C) 2012  Zoompf Incorporated
+    Copyright (C) 2015  Zoompf Incorporated
     info@zoompf.com
 
     This program is free software; you can redistribute it and/or modify
@@ -46,11 +46,11 @@ namespace Zoompf.SPDYAnalysis
         public bool SpeaksSSL = false;
         public List<SSLCertError> CertErrors;
         public bool HasNPNExtension = false;
+        public bool HasALPNExtension = false;
 
-
+        public List<String> ALPNProtocols;
         public List<String> SPDYProtocols;
         public String SSLServerHeader;
-
         
         
         public bool ConnectivityHTTP = false;
@@ -66,6 +66,21 @@ namespace Zoompf.SPDYAnalysis
             get
             {
                 return this.CertErrors.Count == 0;
+            }
+        }
+
+        public bool SupportsHTTP2
+        {
+            get
+            {
+                foreach (String s in this.ALPNProtocols)
+                {
+                    if (s.Contains("h2"))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
 
@@ -153,6 +168,7 @@ namespace Zoompf.SPDYAnalysis
 
             //SPDY Stuff
             this.SPDYProtocols = new List<string>();
+            this.ALPNProtocols = new List<string>();
             
             
 

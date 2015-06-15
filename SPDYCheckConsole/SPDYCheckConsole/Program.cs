@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Net;
+
 using Zoompf.SPDYAnalysis;
 
 namespace Zoompf.SPDYCheckConsole
@@ -13,9 +15,13 @@ namespace Zoompf.SPDYCheckConsole
         static void Main(string[] args)
         {
 
-            SPDYResult result = SPDYChecker.Test("www.qlv.berlin", 443, 8000, "10.10.10.10");
 
-            int x = 45;
+
+            SPDYResult result = SPDYChecker.Test("inevent.us", 443, 8000, "10.10.10.10");
+
+            int x = 4;
+
+
 
         }
     }

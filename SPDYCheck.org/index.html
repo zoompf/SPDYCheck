@@ -81,11 +81,6 @@ body {
   <input type="text" name="host" id="host" size="35" autofocus placeholder="twitter.com">
         <input type="submit" value="Check" id="btn" class="btn" />
 </div>
-<br />
-<div class="alert alert-warn">
-    <strong>Notice:</strong>
-    <p>Many of the SPDY implementations out there are starting to switch from <a href="https://www.imperialviolet.org/2013/03/20/alpn.html">NPN to APLN negotiation</a>. SPDYCheck does not yet support APLN negotiation.  Sites like Facebook and Twitter have different SPDY implementations deployed behind load balancers, which can lead to some results saying SPDY is supported while others saying it is not. If you receive a results that you know is incorrect. Try running the check again. </p>
-</div>
 <p>
     <span class="label label-info">New!</span> Tired of site performance bugs? Get alerted automatically when new defects get introduced. <a href="http://zoompf.com/alerts#spdycheck">Free sign up.</a>
 </p>
@@ -232,7 +227,7 @@ body {
             if(data.SupportsSPDY && data.RedirectsToSSL) {
                 dispItem('HTTP Redirects to SPDY', 'Pretty Sexy! Accessing this website via HTTP automatically redirects the user to access the website via SSL/TLS and SPDY. This means all of website\'s visitors that can browse the site with SPDY, do browse the site using SPDY.', 'info');
                
-            } else if(data.SupportsSPDY && !data.RedirectsToSSL) {
+            } else if(data.SupportsSPDY && data.ConnectivityHTTP && !data.RedirectsToSSL) {
             
                 dispItem('HTTP Traffic Allowed', 'This website can still be accessed via HTTP. HTTP does not provide any widely implemented mechanism for using other protocols like SPDY. Only traffic over SSL/TLS using the NPN Extension can be optimized with SPDY. By allowing HTTP traffic, this website is not even offering SPDY capable browsers the choice of using SPDY. If possible, this website should redirect all <code>http://</code> to <code>https://</code>, ideally with a cachable <code>HTTP 301</code> redirect. ', 'warn');
             } else if(data.RedirectsToSSL) {

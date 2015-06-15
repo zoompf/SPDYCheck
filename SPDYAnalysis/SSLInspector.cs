@@ -1,7 +1,7 @@
 ﻿/*
 
  * SPDYChecker - Audits websites for SPDY support and troubleshooting problems
-    Copyright (C) 2012  Zoompf Incorporated
+    Copyright (C) 2015  Zoompf Incorporated
     info@zoompf.com
 
     This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,8 @@ namespace Zoompf.SPDYAnalysis
 
         public bool SpeaksSSL { get; private set; }
 
+        public SslProtocols ProtocolUsed { get; private set; }
+
         public List<SSLCertError> CertificateErrors { get; private set; }
 
         //working set to avoid eventing issues
@@ -101,7 +103,7 @@ namespace Zoompf.SPDYAnalysis
 
         public void Inspect(int mSecTimout)
         {
-
+            this.ProtocolUsed = SslProtocols.None;
             this.ConnectivityWorks = false;
             this.CertificateErrors = new List<SSLCertError>();
             this.SpeaksSSL = false;
@@ -142,6 +144,7 @@ namespace Zoompf.SPDYAnalysis
             }
 
             SpeaksSSL = true;
+            this.ProtocolUsed = stream.SslProtocol;
             stream.Close();
             
 
@@ -172,6 +175,7 @@ namespace Zoompf.SPDYAnalysis
 
             if (errors != SslPolicyErrors.None)
             {
+
                 lock (locker)
                 {
 

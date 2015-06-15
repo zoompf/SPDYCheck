@@ -31,7 +31,7 @@ namespace SPDYCheck.org
 {
     public class TestLog
     {
-        static String logfile = @"D:\ZoompfDeployed\Logs\ActivityLogs\spdy.csv";
+        static String logfile = @"c:\ZoompfDeployed\Logs\ActivityLogs\spdy.csv";
 
         public static void Log(bool wasCached, SPDYResult result, String ip)
         {

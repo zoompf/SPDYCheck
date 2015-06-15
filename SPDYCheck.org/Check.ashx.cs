@@ -33,6 +33,8 @@ using Zoompf.SPDYAnalysis;
 using Zoompf.General;
 using Zoompf.General.Collections;
 
+using System.Globalization;
+
 namespace SPDYCheck.org
 {
     /// <summary>
@@ -44,7 +46,9 @@ namespace SPDYCheck.org
         //require a . in the hostname, and an optional :port
         //capture group 1: the host name
         //capture group 2: optional port
-        private static Regex hostRegex = new Regex(@"^([a-zA-Z0-9\-\.]+\.[a-zA-Z0-9]+)(:\d{3,5})?$", RegexOptions.Compiled);
+        private static Regex hostRegex = new Regex(@"^([a-zA-Z0-9\-\.]+\.[a-zA-Z0-9]+)(:\d{2,5})?$", RegexOptions.Compiled);
+
+        private static Regex punyHostRegex = new Regex(@"^([a-zA-Z0-9\-\.]+\.[a-zA-Z0-9\-]+)(:\d{2,5})?$", RegexOptions.Compiled);
 
         // Cache results of common entries
         private static OCache<String> cachedResults = new OCache<string>();
@@ -64,6 +68,9 @@ namespace SPDYCheck.org
             
             context.Response.ContentType = "text/plain";
 
+            IdnMapping mapper = new IdnMapping();
+            
+
             string host = String.Empty;
             int port = 443;
 
@@ -78,8 +85,19 @@ namespace SPDYCheck.org
             }
 
             string tmp = Normalize(context.Request.QueryString["host"]).ToLower();
-
-            Match match = hostRegex.Match(tmp);
+            string unpuny = mapper.GetAscii(tmp);
+            
+            Match match = null;
+            
+            //was this a puny domain name?
+            if (tmp != unpuny)
+            {
+                match = punyHostRegex.Match(unpuny);
+            }
+            else
+            {
+                match = hostRegex.Match(tmp);
+            }
             if (match.Success)
             {
                 host = match.Groups[1].Value;
@@ -175,6 +193,19 @@ namespace SPDYCheck.org
                 }
                 resp["SPDYProtocols"] = a;
             }
+
+            resp["HasALPNExtension"] = result.HasALPNExtension;
+            resp["SupportsHTTP2"] = result.SupportsHTTP2;
+            if (result.SupportsHTTP2 && result.ALPNProtocols.Count > 0)
+            {
+                resp["HTTP2Protocol"] = result.ALPNProtocols[0];
+            }
+            else
+            {
+                resp["HTTP2Protocol"] = "";
+            }
+
+
 
             resp["SupportsHSTS"] = result.UsesStrictTransportSecurity;
             if (result.UsesStrictTransportSecurity)

@@ -1,7 +1,7 @@
 ﻿/*
 
  * SPDYChecker - Audits websites for SPDY support and troubleshooting problems
-    Copyright (C) 2012  Zoompf Incorporated
+    Copyright (C) 2015  Zoompf Incorporated
     info@zoompf.com
 
     This program is free software; you can redistribute it and/or modify
@@ -30,17 +30,17 @@ namespace Zoompf.SPDYAnalysis
     public static class SPDYChecker
     {
 
-        public static SPDYResult Test(string host, int port, int mSecTimeout, String clientIP)
+        public static SPDYResult Test(string hostname, int port, int mSecTimeout, String clientIP)
         {
 
-            SPDYResult result = new SPDYResult(host, port);
+            SPDYResult result = new SPDYResult(hostname, port);
 
             SimpleRequestor requestor = new SimpleRequestor(clientIP);
 
             SimpleResponse resp = null;
 
             //check #1, do they have SSL?
-            SSLInspector inspector = new SSLInspector(host, port);
+            SSLInspector inspector = new SSLInspector(hostname, port);
 
             inspector.Inspect(mSecTimeout);
 
@@ -49,21 +49,25 @@ namespace Zoompf.SPDYAnalysis
             result.SpeaksSSL = inspector.SpeaksSSL;
             
        
-            if(inspector.SpeaksSSL) {
+            if(inspector.SpeaksSSL)
+            {
 
                 //gather info on the SSL cert errors
                 result.CertErrors.AddRange(inspector.CertificateErrors);
 
-                //probe the SSL port for SPDY support and compression info
-                SSLHandshaker handshaker = new SSLHandshaker(host, port);
+                ServerHello serverHello = TlsHandshaker.ExchangeHellos(hostname, port, inspector.ProtocolUsed, mSecTimeout);
 
-                handshaker.Check(mSecTimeout);
-                result.HasNPNExtension = handshaker.HasNPNExtension;
-                result.SPDYProtocols.AddRange(handshaker.SPDYProtocols);
+                if (serverHello != null)
+                {
+                    result.HasNPNExtension = serverHello.HasNPNExtension;
+                    result.SPDYProtocols.AddRange(serverHello.NPNProtocols);
+                    result.HasALPNExtension = serverHello.HasALPNExtension;
+                    result.ALPNProtocols.AddRange(serverHello.ALPNProtocols);
+                }
 
                 //lets check the HTTP headers of the SSL website, to get the server header and test for HSTS support.
                 requestor.Timeout = 9000;
-                resp = requestor.Head("https://" + host + ":" + port + "/");
+                resp = requestor.Head("https://" + hostname + ":" + port + "/");
                 if (resp != null)
                 {
                     result.SSLServerHeader = resp.GetHeaderValue("Server");
@@ -75,7 +79,7 @@ namespace Zoompf.SPDYAnalysis
 
             //check to see what a request to port 80 does
             requestor.Timeout = 9000;
-            resp = requestor.Head("http://" + host + "/");
+            resp = requestor.Head("http://" + hostname + "/");
             if (resp != null)
             {
                 result.ConnectivityHTTP = true;
@@ -84,7 +88,7 @@ namespace Zoompf.SPDYAnalysis
                 if (result.SpeaksSSL)
                 {
                     //does a request to 80 automatically redirect us?
-                    if (resp.ResponseURL.Scheme == "https" && resp.ResponseURL.Host.ToLower().Contains(host))
+                    if (resp.ResponseURL.Scheme == "https" && resp.ResponseURL.Host.ToLower().Contains(hostname))
                     {
                         result.RedirectsToSSL = true;
                     }
