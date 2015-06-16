@@ -146,7 +146,7 @@ body {
         //SSL port connectivity status
         if (data.ConnectivitySSL)
         {
-            dispItem('Network Server on ' + port, 'Nice, this host has a network service listening on port ' + port +'. SPDY works over <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> which usually listens on port 443.', 'success');
+            dispItem('Network Server on ' + port, 'Nice, this host has a network service listening on port ' + port +'! SPDY works over <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> which usually listens on port 443.', 'success');
         } else {
         dispItem('Nothing listening on ' + port + '!', 'Drat! This host is not listening for incoming requests on port ' + port + '. SPDY doesn\'t use port 80 like regular HTTP does. It uses a special service running on a different port, usually 443. To support SPDY, this host first needs to enabled <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a> access for their website.', 'error');
         }
@@ -169,7 +169,7 @@ body {
 
             //NPN status
             if (data.HasNPNExtension) {
-                dispItem('ServerHello Contains NPN Extension', 'Nice, this server including the <a href="http://tools.ietf.org/html/draft-agl-tls-nextprotoneg">NPN Entension</a> during the SSL/TLS handshake. The NPN Extension is an additional part of the <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security#TLS_handshake_in_detail">SSL/TLS ServerHello message</a> which allows the web server to tell browser it supports additional protocols, like SPDY.', 'success');
+                dispItem('ServerHello Contains NPN Extension', 'Nice, this server including the <a href="http://tools.ietf.org/html/draft-agl-tls-nextprotoneg">NPN Extension</a> during the SSL/TLS handshake. The NPN Extension is an additional part of the <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security#TLS_handshake_in_detail">SSL/TLS ServerHello message</a> which allows the web server to tell browser it supports additional protocols, like SPDY.', 'success');
 
                 //SPDY status
                 if (data.SupportsSPDY) {
@@ -236,7 +236,7 @@ body {
             if(data.SupportsHSTS) {
                 
                 var days = data.HSTSMaxAge / 60 / 60 / 24;
-                dispItem('Strict-Transport-Security Supporteded', 'Excellent! This website is using HSTS, also known as Strict Transport Security. This tells the browser to always use SSL when talking to this website, allows more of your visitors the opportunity to both be secure and to use SPDY. The server is sending the header <code>Strict-Transport-Security: ' + he(data.HSTSHeader) + '</code> which tells the web browser to always use SSL to access this website for the next <b>' + days + '</b> days.', 'info');
+                dispItem('Strict-Transport-Security Supported', 'Excellent! This website is using HSTS, also known as Strict Transport Security. This tells the browser to always use SSL when talking to this website, allows more of your visitors the opportunity to both be secure and to use SPDY. The server is sending the header <code>Strict-Transport-Security: ' + he(data.HSTSHeader) + '</code> which tells the web browser to always use SSL to access this website for the next <b>' + days + '</b> days.', 'info');
             } else {
                 dispItem('Not Using Strict-Transport-Security', 'This website is not using HSTS, also known as Strict Transport Security. HSTS is a special HTTP response header, sent by the web server on content served over SSL, which tells the browser to always use SSL when talking to this website. HSTS not only adds security, but improves performance since your visitors will always exclusively use the SSL version of your website, allowing them to also use SPDY.', 'warn');
             }
