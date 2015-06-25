@@ -47,6 +47,7 @@ namespace Zoompf.SPDYAnalysis
             
             result.ConnectivitySSL = inspector.ConnectivityWorks;
             result.SpeaksSSL = inspector.SpeaksSSL;
+            result.Protocol = inspector.ProtocolUsed;
             
        
             if(inspector.SpeaksSSL)

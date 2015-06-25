@@ -153,7 +153,7 @@ body {
 
         //SSL protocol support status
         if (data.SpeaksSSL) {
-            dispItem('SSL/TLS Detected', 'Good, this host is speaking <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a>. SPDY piggybacks on top of SSL/TLS, so a website needs SSL/TLS to use SPDY.', 'success');
+            dispItem( data.Protocol + ' Connection Detected', 'Good, this host is speaking <a href="https://en.wikipedia.org/wiki/Secure_Sockets_Layer">SSL/TLS</a>, specifically ' + data.Protocol + '. SPDY piggybacks on top of SSL/TLS, so a website needs SSL/TLS to use SPDY.', 'success');
 
             //Certificate status
             if (data.SSLCertificateValid) {
@@ -213,7 +213,7 @@ body {
                     {
                         dispItem('SPDY Capable Server Detected!', 'Well awesome! This SSL/TLS web server is identifying itself as <code>' + he(data.SSLServerHeader) + '</code>. This is a SPDY capable web server! Go check your server for modules or newer versions which have SPDY support enabled.', 'info'); 
                     } else if(/iis\//i.test(data.SSLServerHeader)) {
-                       dispItem('Incompatible Web Server.', 'Oh no! This web server is identifying itself as Microsoft IIS, specifically <code>' + he(data.SSLServerHeader) + '</code>.  Microsoft has not commited to the SPDY protocol and has proposed an alternative. It is unlikely this web server will ever support SPDY.', 'error'); 
+                       dispItem('Incompatible Web Server.', 'Oh no! This web server is identifying itself as Microsoft IIS, specifically <code>' + he(data.SSLServerHeader) + '</code>.  Microsoft not commited to the SPDY protocol and had proposed an alternative. It is unlikely this web server will ever support SPDY, but it may support HTTP/2', 'error'); 
                     } else {
                         dispItem('Web Server with Unknown SPDY Support Status', 'The SSL/TLS web server says it\'s a <code>' + he(data.SSLServerHeader) + '</code> server. While this is not a web server known to support SPDY, perhaps it does or will do so soon. Consult the web server documentation and its vendor to learn more about SPDY support.', 'info'); 
                     }

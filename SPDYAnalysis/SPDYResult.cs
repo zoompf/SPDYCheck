@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Security.Authentication;
 
 namespace Zoompf.SPDYAnalysis
 {
@@ -44,6 +45,7 @@ namespace Zoompf.SPDYAnalysis
         
         public bool ConnectivitySSL = false;
         public bool SpeaksSSL = false;
+        public SslProtocols Protocol = SslProtocols.None;
         public List<SSLCertError> CertErrors;
         public bool HasNPNExtension = false;
         public bool HasALPNExtension = false;

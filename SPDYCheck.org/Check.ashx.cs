@@ -32,7 +32,7 @@ using System.Text.RegularExpressions;
 using Zoompf.SPDYAnalysis;
 using Zoompf.General;
 using Zoompf.General.Collections;
-
+using System.Security.Authentication;
 using System.Globalization;
 
 namespace SPDYCheck.org
@@ -163,6 +163,7 @@ namespace SPDYCheck.org
 
             resp["ConnectivitySSL"] = result.ConnectivitySSL;
             resp["SpeaksSSL"] = result.SpeaksSSL;
+            resp["Protocol"] = protoString(result.Protocol);
             resp["SupportSSLHTTPFallback"] = result.SupportSSLHTTPFallback;
 
             resp["RedirectsToSSL"] = result.RedirectsToSSL;
@@ -231,6 +232,32 @@ namespace SPDYCheck.org
             {
                 return false;
             }
+        }
+
+        private String protoString(SslProtocols protocols)
+        {
+
+            switch (protocols)
+            {
+                case SslProtocols.Ssl2:
+                    return "SSL v2";
+
+                case SslProtocols.Ssl3:
+                    return "SSL v3";
+
+                case SslProtocols.Tls:
+                    return "TLS v1.0";
+
+                case SslProtocols.Tls11:
+                    return "TLS v1.1";
+
+                case SslProtocols.Tls12:
+                    return "TLS v1.2";
+
+                default:
+                    return "TLS";
+            }
+
         }
 
         // Find the client's IP address from CloudFlare, look for CF-Connecting-IP header.
