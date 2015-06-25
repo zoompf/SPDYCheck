@@ -125,10 +125,10 @@ namespace Zoompf.SPDYAnalysis
 
             RemoteCertificateValidationCallback callback = new RemoteCertificateValidationCallback(OnCertificateValidation);
             SslStream stream = new SslStream(client.GetStream(), false, callback);
-             
+            X509CertificateCollection dummy = new X509CertificateCollection();
             try{
 
-                    stream.AuthenticateAsClient(host); //blocks
+                    stream.AuthenticateAsClient(host,dummy, SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls | SslProtocols.Ssl3, false); //blocks
                     System.Threading.Thread.Sleep(100); //wait for good measure
             }
             catch (System.Net.Sockets.SocketException)
