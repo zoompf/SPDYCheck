@@ -20,6 +20,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,6 +72,7 @@
     <Content Include="images\pass.gif" />
     <Content Include="images\spinner.gif" />
     <Content Include="images\zoompf-small.png" />
+    <Content Include="images\zoompf_rigor.png" />
     <Content Include="index.html" />
     <Content Include="js\jquery-1.7.1.min.js" />
     <Content Include="Web.config" />
