@@ -44,8 +44,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -91,13 +92,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Check.ashx" />
-    <None Include="Properties\PublishProfiles\LocalSPDY.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPDYAnalysis\SPDYAnalysis.csproj">
       <Project>{1c7e8f96-23ed-4a52-b41a-e5a5d44d9787}</Project>
       <Name>SPDYAnalysis</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\PublishBS.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
